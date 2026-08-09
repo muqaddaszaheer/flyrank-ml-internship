@@ -2,9 +2,35 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Search Intelligence Content Review</title>
+
+  <title>Search Intelligence Content Review | Muqaddas Zaheer Ahmad</title>
+
+  <meta
+    name="description"
+    content="FlyRank AI Internship capstone project exploring machine learning for prioritizing content pages for human review using search, content, and engagement signals."
+  >
+
+  <meta name="author" content="Muqaddas Zaheer Ahmad">
+
+  <!-- Open Graph / Social Share Metadata -->
+  <meta property="og:title" content="Search Intelligence Content Review">
+  <meta
+    property="og:description"
+    content="FlyRank AI Internship capstone project on using machine learning to prioritize content pages for human review."
+  >
+  <meta property="og:type" content="website">
+  <meta
+    property="og:url"
+    content="https://muqaddaszaheer.github.io/flyrank-ml-internship/"
+  >
+
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: Arial, Helvetica, sans-serif;
       line-height: 1.7;
@@ -19,7 +45,7 @@
       background: white;
       padding: 40px;
       border-radius: 12px;
-      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
     }
 
     h1 {
@@ -60,10 +86,18 @@
       margin: 20px 0;
     }
 
+    .warning {
+      background: #fff3f3;
+      padding: 15px;
+      border-left: 5px solid #c0392b;
+      margin: 20px 0;
+    }
+
     code {
       background: #f1f1f1;
       padding: 2px 5px;
       border-radius: 4px;
+      font-family: Consolas, monospace;
     }
 
     table {
@@ -72,7 +106,8 @@
       margin: 20px 0;
     }
 
-    th, td {
+    th,
+    td {
       border: 1px solid #ddd;
       padding: 10px;
       text-align: left;
@@ -87,7 +122,8 @@
       background: #f8f9fb;
     }
 
-    ul, ol {
+    ul,
+    ol {
       padding-left: 25px;
     }
 
@@ -96,12 +132,26 @@
       font-weight: bold;
     }
 
+    a:hover {
+      text-decoration: underline;
+    }
+
     .footer {
       margin-top: 50px;
       padding-top: 20px;
       border-top: 1px solid #ddd;
       color: #666;
       text-align: center;
+    }
+
+    .status {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 5px;
+      font-size: 14px;
+      font-weight: bold;
+      background: #eef7ee;
+      color: #28652d;
     }
 
     @media (max-width: 700px) {
@@ -113,514 +163,774 @@
       table {
         font-size: 14px;
       }
+
+      h1 {
+        font-size: 28px;
+      }
+
+      h2 {
+        font-size: 22px;
+      }
     }
   </style>
 </head>
 
 <body>
 
-<div class="container">
-
-  <h1>Search Intelligence Content Review</h1>
-
-  <div class="meta">
-    <strong>Author:</strong> Muqaddas Zaheer Ahmad<br>
-    <strong>Lane:</strong> Applied Search Intelligence<br>
-    <strong>Project:</strong> FlyRank AI Internship Capstone<br>
-    <strong>Date:</strong> August 2026
-  </div>
-
-  <h2>Abstract</h2>
-
-  <p>
-    This project asks whether machine learning can help prioritize content pages
-    for human review using observable search, content, and engagement signals.
-    I used the anonymized FlyRank content-refresh dataset and prepared features
-    for classifying pages into the observed declining-performance class.
-    I evaluated Logistic Regression using both a stratified row split and a
-    client-holdout split.
-  </p>
-
-  <p>
-    On the client-holdout split, the model achieved 0.6606 accuracy,
-    0.5659 precision, 0.5666 recall, 0.5662 F1, and 0.7003 ROC AUC.
-    The output is intended as directional decision support for human content
-    and SEO review, not as an automatic decision system or proof of future
-    performance.
-  </p>
-
-  <h2>1. Introduction / Problem Statement</h2>
-
-  <p>
-    The goal of this project is to help content and SEO teams decide which
-    pages may deserve attention first.
-  </p>
-
-  <p>
-    The unit of analysis is a content page. The main output is a classification
-    score for the observed declining-performance class, together with a ranked
-    action queue and reason codes.
-  </p>
-
-  <p>
-    A human reviewer can use the output to decide which pages should be
-    investigated first instead of reviewing every page in the same order.
-  </p>
-
-  <p>
-    Machine learning is useful here because several observable content, search,
-    and engagement signals can be considered together instead of relying on
-    only one simple rule.
-  </p>
-
-  <div class="note">
-    <strong>Important:</strong> The output is intended as decision support.
-    It does not prove that a particular content change will improve search
-    performance.
-  </div>
-
-  <h2>2. Data</h2>
-
-  <p>
-    The analysis uses the anonymized FlyRank content-refresh dataset:
-  </p>
-
-  <p><code>data/raw/content_refresh_anonymized.csv</code></p>
-
-  <p>
-    The modeling workflow contains 30,000 rows and 44 source columns.
-  </p>
-
-  <p>
-    The processed feature file used by the validation workflow is:
-  </p>
-
-  <p><code>data/processed/refresh_feature_vector.csv</code></p>
-
-  <p>The target is:</p>
-
-  <p><code>is_declining_label</code></p>
-
-  <p>
-    The final model uses 52 processed features after numeric processing and
-    categorical encoding.
-  </p>
-
-  <h3>Features</h3>
-
-  <ul>
-    <li>Search volume</li>
-    <li>Competition</li>
-    <li>CPC</li>
-    <li>Content length</li>
-    <li>Impressions</li>
-    <li>Clicks</li>
-    <li>Sessions</li>
-    <li>Content age</li>
-    <li>Days since last update</li>
-    <li>CTR</li>
-    <li>Average position</li>
-    <li>Engagement rate</li>
-    <li>Scroll rate</li>
-    <li>AI traffic percentage</li>
-    <li>Selected categorical content and search attributes</li>
-  </ul>
-
-  <h3>Excluded Fields</h3>
-
-  <ul>
-    <li><code>content_id</code> — used as an identifier, not a predictive feature.</li>
-    <li><code>client_id</code> — used only for grouped validation and never as a model feature.</li>
-    <li><code>trend_pct</code> — excluded because it is derived from trend information used to define the target.</li>
-    <li><code>trend_direction</code> — excluded because it is label-related and could create leakage.</li>
-  </ul>
-
-  <p>
-    No client-identifying information is intentionally included in this public report.
-  </p>
-
-  <h2>3. Methodology</h2>
-
-  <p>
-    The main model is <strong>Logistic Regression</strong>.
-  </p>
-
-  <p>
-    I selected Logistic Regression because it is simple, reproducible, and
-    relatively easy to interpret while allowing multiple observable signals
-    to contribute to the classification decision.
-  </p>
-
-  <h3>Final Model</h3>
-
-  <ul>
-    <li>StandardScaler</li>
-    <li>Logistic Regression</li>
-    <li>Balanced class weights</li>
-    <li><code>max_iter=2000</code></li>
-    <li><code>random_state=42</code></li>
-  </ul>
-
-  <p>
-    The final model contains 52 processed features.
-  </p>
-
-  <p>
-    The target is <code>is_declining_label</code>, representing the observed
-    declining-performance class in the prepared data.
-  </p>
-
-  <h2>4. Baseline</h2>
-
-  <p>
-    The first baseline was a simple and transparent rule using:
-  </p>
-
-  <ul>
-    <li><code>days_since_last_update</code></li>
-    <li><code>ctr</code></li>
-  </ul>
-
-  <p>
-    A page was marked for review when it met the baseline staleness or CTR condition.
-  </p>
-
-  <ul>
-    <li>Stale threshold: 104 days</li>
-    <li>Low CTR threshold: 0.0</li>
-  </ul>
-
-  <p>
-    The baseline provides a simple reference point for the machine-learning model.
-  </p>
-
-  <h3>Baseline vs Model</h3>
-
-  <table>
-    <thead>
-      <tr>
-        <th>Method</th>
-        <th>Accuracy</th>
-        <th>Precision</th>
-        <th>Recall</th>
-        <th>F1</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Week-4 baseline</td>
-        <td>1.0000</td>
-        <td>1.0000</td>
-        <td>1.0000</td>
-        <td>1.0000</td>
-      </tr>
-      <tr>
-        <td>Logistic Regression</td>
-        <td>0.8052</td>
-        <td>0.8202</td>
-        <td>0.8930</td>
-        <td>0.8551</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <div class="highlight">
-    <strong>Important interpretation:</strong>
-    The perfect baseline result should be interpreted carefully. The baseline
-    target was constructed directly from the same staleness and CTR rule used
-    by this baseline. Therefore, the 1.0000 result reflects alignment between
-    the rule and the target definition rather than evidence that the baseline
-    is a stronger independent predictor.
-  </div>
-
-  <h2>5. Evaluation</h2>
-
-  <p>Two validation designs were compared.</p>
-
-  <h3>Stratified Row Split</h3>
-
-  <ul>
-    <li>Training rows: 24,000</li>
-    <li>Test rows: 6,000</li>
-    <li>Accuracy: 0.6502</li>
-    <li>Precision: 0.6775</li>
-    <li>Recall: 0.6765</li>
-    <li>F1: 0.6770</li>
-    <li>ROC AUC: 0.7107</li>
-    <li>Average Precision: 0.7271</li>
-  </ul>
-
-  <h3>Client-Holdout Split</h3>
-
-  <ul>
-    <li>Training rows: 27,675</li>
-    <li>Test rows: 2,325</li>
-    <li>Accuracy: 0.6606</li>
-    <li>Precision: 0.5659</li>
-    <li>Recall: 0.5666</li>
-    <li>F1: 0.5662</li>
-    <li>ROC AUC: 0.7003</li>
-    <li>Average Precision: 0.5215</li>
-  </ul>
-
-  <p>
-    The client-holdout result is the more important generalization result
-    because clients in the test set were not present in training.
-  </p>
-
-  <div class="note">
-    <strong>Shared clients: 0</strong><br>
-    The training and test clients were completely separated.
-  </div>
-
-  <h3>Final Client-Holdout Model Results</h3>
-
-  <table>
-    <thead>
-      <tr>
-        <th>Metric</th>
-        <th>Client-Holdout Result</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr>
-        <td>Accuracy</td>
-        <td>0.6606</td>
-      </tr>
-      <tr>
-        <td>Precision</td>
-        <td>0.5659</td>
-      </tr>
-      <tr>
-        <td>Recall</td>
-        <td>0.5666</td>
-      </tr>
-      <tr>
-        <td>F1</td>
-        <td>0.5662</td>
-      </tr>
-      <tr>
-        <td>ROC AUC</td>
-        <td>0.7003</td>
-      </tr>
-      <tr>
-        <td>Average Precision</td>
-        <td>0.5215</td>
-      </tr>
-    </tbody>
-  </table>
-
-  <p>
-    Average Precision decreased from 0.7271 under the row split to 0.5215
-    under the client-holdout split. This shows that the row-level evaluation
-    was more optimistic and that performance is harder to maintain on unseen clients.
-  </p>
-
-  <h2>6. Interpretation</h2>
-
-  <p>
-    The model combines multiple observable signals instead of relying on only one rule.
-  </p>
-
-  <p>
-    In the earlier two-feature Logistic Regression development experiment:
-  </p>
-
-  <ul>
-    <li><code>days_since_last_update</code> had a positive coefficient of approximately <code>0.068539</code>.</li>
-    <li><code>ctr</code> had a negative coefficient of approximately <code>-2.809776</code>.</li>
-  </ul>
-
-  <p>
-    In that development model, greater time since the last update increased
-    the model's tendency toward the review class, while higher CTR decreased
-    that tendency.
-  </p>
-
-  <p>
-    These coefficients describe associations within the model. They should
-    not be interpreted as causal effects.
-  </p>
-
-  <p>
-    The error analysis also showed that some pages have signals that point in
-    different directions. For example, a page can look stale but still not
-    belong to the observed declining class, or it can show a declining label
-    even when the simple staleness and CTR rule does not flag it.
-  </p>
-
-  <p>
-    The most important negative result is the decrease in Average Precision
-    from 0.7271 with the row split to 0.5215 with the client-holdout split.
-  </p>
-
-  <h2>7. Ranked Recommendations</h2>
-
-  <p>
-    The model should be used to <strong>prioritize human review</strong>,
-    not to make automatic decisions.
-  </p>
-
-  <ol>
-    <li>
-      <strong>Refresh declining content:</strong>
-      Prioritize pages showing evidence of declining performance.
-    </li>
-    <li>
-      <strong>Review weak engagement:</strong>
-      Investigate pages with weaker observed engagement signals.
-    </li>
-    <li>
-      <strong>Review weak click-through performance:</strong>
-      Investigate pages with weaker observed CTR.
-    </li>
-    <li>
-      <strong>Review older content:</strong>
-      Consider older pages as part of a broader content review.
-    </li>
-    <li>
-      <strong>Monitor pages without a clear action signal:</strong>
-      Do not force an action when the available evidence is weak.
-    </li>
-  </ol>
-
-  <p>
-    A FlyRank editor could use the ranked queue as a starting point for daily
-    or weekly content review.
-  </p>
-
-  <p>
-    Before taking action, the reviewer should check the page context, available
-    performance evidence, reason code, and whether the recommendation makes
-    sense for the specific content.
-  </p>
-
-  <h3>The system should not automatically:</h3>
-
-  <ul>
-    <li>Publish content</li>
-    <li>Delete content</li>
-    <li>Redirect URLs</li>
-    <li>Make major content changes</li>
-    <li>Make high-impact decisions</li>
-    <li>Treat a model prediction as proof of future performance</li>
-  </ul>
-
-  <p>
-    The confidence in individual recommendations is limited because the
-    validation results show weaker performance on unseen clients.
-  </p>
-
-  <div class="note">
-    Therefore, the recommendations should remain
-    <strong>directional decision support</strong>.
-  </div>
-
-  <h2>8. Limitations</h2>
-
-  <ol>
-    <li>The model is evaluated on observed data and does not prove future search performance.</li>
-    <li>Performance is weaker when tested on unseen clients.</li>
-    <li>The client-holdout Average Precision was 0.5215.</li>
-    <li>The model should not be treated as a causal model.</li>
-    <li>Some pages contain mixed signals that can lead to classification errors.</li>
-    <li>Human review is still required before taking action.</li>
-    <li>Changes in data conditions or feature distributions may reduce model performance over time.</li>
-  </ol>
-
-  <p>
-    These limitations mean the model is best used as a prioritization and
-    decision-support tool.
-  </p>
-
-  <h2>9. Reproducibility</h2>
-
-  <p>
-    The complete project repository is available here:
-  </p>
-
-  <p>
-    <a href="https://github.com/muqaddaszaheer/flyrank-ml-internship" target="_blank">
-      GitHub Repository
-    </a>
-  </p>
-
-  <p>The main capstone notebook is:</p>
-
-  <p><code>work/notebooks/capstone.ipynb</code></p>
-
-  <p>Supporting notebooks are stored under:</p>
-
-  <p><code>work/notebooks/</code></p>
-
-  <h3>Validation Workflow</h3>
-
-  <ul>
-    <li><code>data/raw/content_refresh_anonymized.csv</code></li>
-    <li><code>data/processed/refresh_feature_vector.csv</code></li>
-    <li><code>scripts/01_prepare_features.py</code></li>
-    <li><code>scripts/ml_utils.py</code></li>
-  </ul>
-
-  <h3>Model Configuration</h3>
-
-  <ul>
-    <li><code>StandardScaler</code></li>
-    <li><code>LogisticRegression</code></li>
-    <li><code>class_weight="balanced"</code></li>
-    <li><code>max_iter=2000</code></li>
-    <li><code>random_state=42</code></li>
-  </ul>
-
-  <p>
-    The stratified row split uses <code>test_size=0.20</code>,
-    <code>random_state=42</code>, and stratification by the target.
-  </p>
-
-  <p>
-    The client-holdout validation uses a NumPy random generator with seed
-    <code>42</code> and keeps clients completely separate between training
-    and test data.
-  </p>
-
-  <p>
-    The analysis should be re-run from a fresh clone before making a final
-    claim about the reported numbers.
-  </p>
-
-  <h2>10. Acknowledgments &amp; Data Credit</h2>
-
-  <p>
-    This project was built on the FlyRank ML Internship dataset.
-  </p>
-
-  <p>
-    Data and internship credit:
-    <a href="https://flyrank.ai/" target="_blank">FlyRank</a>
-  </p>
-
-  <h2>Final Note</h2>
-
-  <p>
-    This project is presented as an applied machine-learning analysis and
-    decision-support workflow.
-  </p>
-
-  <p>
-    The results are observed and measured results from the available evaluation
-    data. They should not be interpreted as causal effects or guaranteed future
-    performance.
-  </p>
-
-  <p>
-    The final decision remains with a human reviewer.
-  </p>
-
-  <div class="footer">
-    FlyRank AI Internship Capstone · Search Intelligence Content Review · August 2026
-  </div>
-
-</div>
+  <main class="container">
+
+    <h1>Search Intelligence Content Review</h1>
+
+    <div class="meta">
+      <strong>Author:</strong> Muqaddas Zaheer Ahmad<br>
+      <strong>Lane:</strong> Applied Search Intelligence<br>
+      <strong>Project:</strong> FlyRank AI Internship Capstone<br>
+      <strong>Date:</strong> August 2026
+    </div>
+
+    <h2>Abstract</h2>
+
+    <p>
+      This project asks whether machine learning can help prioritize content
+      pages for human review using observable search, content, and engagement
+      signals. I used the anonymized FlyRank content-refresh dataset and
+      prepared features for classifying pages into the observed
+      declining-performance class. I evaluated Logistic Regression using both
+      a stratified row split and a client-holdout split.
+    </p>
+
+    <p>
+      On the client-holdout split, the model achieved 0.6606 accuracy,
+      0.5659 precision, 0.5666 recall, 0.5662 F1, and 0.7003 ROC AUC.
+      The output is intended as directional decision support for human
+      content and SEO review, not as an automatic decision system or proof
+      of future performance.
+    </p>
+
+    <h2>1. Introduction / Problem Statement</h2>
+
+    <p>
+      The goal of this project is to help content and SEO teams decide which
+      pages may deserve attention first.
+    </p>
+
+    <p>
+      The unit of analysis is a content page. The main output is a
+      classification score for the observed declining-performance class,
+      together with a ranked action queue and reason codes.
+    </p>
+
+    <p>
+      A human reviewer can use the output to decide which pages should be
+      investigated first instead of reviewing every page in the same order.
+    </p>
+
+    <p>
+      Machine learning is useful here because several observable content,
+      search, and engagement signals can be considered together instead of
+      relying on only one simple rule.
+    </p>
+
+    <div class="highlight">
+      <strong>Important:</strong>
+      The output is intended as decision support. It does not prove that a
+      particular content change will improve search performance.
+    </div>
+
+    <h2>2. Data</h2>
+
+    <p>
+      The analysis uses the anonymized FlyRank content-refresh dataset:
+    </p>
+
+    <p>
+      <code>data/raw/content_refresh_anonymized.csv</code>
+    </p>
+
+    <p>
+      The modeling workflow contains 30,000 rows and 44 source columns.
+    </p>
+
+    <p>
+      The processed feature file used by the validation workflow is:
+    </p>
+
+    <p>
+      <code>data/processed/refresh_feature_vector.csv</code>
+    </p>
+
+    <p>
+      The target is:
+    </p>
+
+    <p>
+      <code>is_declining_label</code>
+    </p>
+
+    <p>
+      The final model uses 52 processed features after numeric processing
+      and categorical encoding.
+    </p>
+
+    <h3>Features</h3>
+
+    <ul>
+      <li>Search volume</li>
+      <li>Competition</li>
+      <li>CPC</li>
+      <li>Content length</li>
+      <li>Impressions</li>
+      <li>Clicks</li>
+      <li>Sessions</li>
+      <li>Content age</li>
+      <li>Days since last update</li>
+      <li>CTR</li>
+      <li>Average position</li>
+      <li>Engagement rate</li>
+      <li>Scroll rate</li>
+      <li>AI traffic percentage</li>
+      <li>Selected categorical content and search attributes</li>
+    </ul>
+
+    <h3>Excluded Fields</h3>
+
+    <ul>
+      <li>
+        <code>content_id</code> — used as an identifier, not a predictive
+        feature.
+      </li>
+
+      <li>
+        <code>client_id</code> — used only for grouped validation and never
+        as a model feature.
+      </li>
+
+      <li>
+        <code>trend_pct</code> — excluded because it is derived from trend
+        information used to define the target.
+      </li>
+
+      <li>
+        <code>trend_direction</code> — excluded because it is label-related
+        and could create leakage.
+      </li>
+    </ul>
+
+    <p>
+      No client-identifying information is intentionally included in this
+      public report.
+    </p>
+
+    <h2>3. Methodology</h2>
+
+    <p>
+      The main model is <strong>Logistic Regression</strong>.
+    </p>
+
+    <p>
+      I selected Logistic Regression because it is simple, reproducible, and
+      relatively easy to interpret while allowing multiple observable signals
+      to contribute to the classification decision.
+    </p>
+
+    <h3>Final Model</h3>
+
+    <ul>
+      <li>StandardScaler</li>
+      <li>Logistic Regression</li>
+      <li>Balanced class weights</li>
+      <li><code>max_iter=2000</code></li>
+      <li><code>random_state=42</code></li>
+    </ul>
+
+    <p>
+      The final model contains 52 processed features.
+    </p>
+
+    <p>
+      The target is <code>is_declining_label</code>, representing the
+      observed declining-performance class in the prepared data.
+    </p>
+
+    <h2>4. Baseline</h2>
+
+    <p>
+      The first baseline was a simple and transparent rule using:
+    </p>
+
+    <ul>
+      <li><code>days_since_last_update</code></li>
+      <li><code>ctr</code></li>
+    </ul>
+
+    <p>
+      A page was marked for review when it met the baseline staleness or CTR
+      condition.
+    </p>
+
+    <ul>
+      <li>Stale threshold: 104 days</li>
+      <li>Low CTR threshold: 0.0</li>
+    </ul>
+
+    <p>
+      The baseline provides a simple reference point for the machine-learning
+      model.
+    </p>
+
+    <h3>Baseline vs Model</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Method</th>
+          <th>Accuracy</th>
+          <th>Precision</th>
+          <th>Recall</th>
+          <th>F1</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td>Week-4 baseline</td>
+          <td>1.0000</td>
+          <td>1.0000</td>
+          <td>1.0000</td>
+          <td>1.0000</td>
+        </tr>
+
+        <tr>
+          <td>Logistic Regression</td>
+          <td>0.8052</td>
+          <td>0.8202</td>
+          <td>0.8930</td>
+          <td>0.8551</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div class="highlight">
+      <strong>Important interpretation:</strong>
+      The perfect baseline result should be interpreted carefully. The
+      baseline target was constructed directly from the same staleness and
+      CTR rule used by this baseline. Therefore, the 1.0000 result reflects
+      alignment between the rule and the target definition rather than
+      evidence that the baseline is a stronger independent predictor.
+    </div>
+
+    <h2>5. Evaluation</h2>
+
+    <p>
+      Two validation designs were compared.
+    </p>
+
+    <h3>Stratified Row Split</h3>
+
+    <ul>
+      <li>Training rows: 24,000</li>
+      <li>Test rows: 6,000</li>
+      <li>Accuracy: 0.6502</li>
+      <li>Precision: 0.6775</li>
+      <li>Recall: 0.6765</li>
+      <li>F1: 0.6770</li>
+      <li>ROC AUC: 0.7107</li>
+      <li>Average Precision: 0.7271</li>
+    </ul>
+
+    <h3>Client-Holdout Split</h3>
+
+    <ul>
+      <li>Training rows: 27,675</li>
+      <li>Test rows: 2,325</li>
+      <li>Accuracy: 0.6606</li>
+      <li>Precision: 0.5659</li>
+      <li>Recall: 0.5666</li>
+      <li>F1: 0.5662</li>
+      <li>ROC AUC: 0.7003</li>
+      <li>Average Precision: 0.5215</li>
+    </ul>
+
+    <p>
+      The client-holdout result is the more important generalization result
+      because clients in the test set were not present in training.
+    </p>
+
+    <div class="note">
+      <strong>Shared clients: 0</strong><br>
+      The training and test clients were completely separated.
+    </div>
+
+    <h3>Final Client-Holdout Model Results</h3>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Metric</th>
+          <th>Client-Holdout Result</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td>Accuracy</td>
+          <td>0.6606</td>
+        </tr>
+
+        <tr>
+          <td>Precision</td>
+          <td>0.5659</td>
+        </tr>
+
+        <tr>
+          <td>Recall</td>
+          <td>0.5666</td>
+        </tr>
+
+        <tr>
+          <td>F1</td>
+          <td>0.5662</td>
+        </tr>
+
+        <tr>
+          <td>ROC AUC</td>
+          <td>0.7003</td>
+        </tr>
+
+        <tr>
+          <td>Average Precision</td>
+          <td>0.5215</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p>
+      Average Precision decreased from 0.7271 under the row split to 0.5215
+      under the client-holdout split. This shows that the row-level evaluation
+      was more optimistic and that performance is harder to maintain on
+      unseen clients.
+    </p>
+
+    <h2>6. Interpretation</h2>
+
+    <p>
+      The model combines multiple observable signals instead of relying on
+      only one rule.
+    </p>
+
+    <p>
+      In the earlier two-feature Logistic Regression development experiment:
+    </p>
+
+    <ul>
+      <li>
+        <code>days_since_last_update</code> had a positive coefficient of
+        approximately <code>0.068539</code>.
+      </li>
+
+      <li>
+        <code>ctr</code> had a negative coefficient of approximately
+        <code>-2.809776</code>.
+      </li>
+    </ul>
+
+    <p>
+      In that development model, greater time since the last update increased
+      the model's tendency toward the review class, while higher CTR decreased
+      that tendency.
+    </p>
+
+    <p>
+      These coefficients describe associations within the model. They should
+      not be interpreted as causal effects.
+    </p>
+
+    <p>
+      The error analysis also showed that some pages have signals that point
+      in different directions. For example, a page can look stale but still
+      not belong to the observed declining class, or it can show a declining
+      label even when the simple staleness and CTR rule does not flag it.
+    </p>
+
+    <p>
+      The most important negative result is the decrease in Average Precision
+      from 0.7271 with the row split to 0.5215 with the client-holdout split.
+    </p>
+
+    <h2>7. Ranked Recommendations</h2>
+
+    <p>
+      The model should be used to <strong>prioritize human review</strong>,
+      not to make automatic decisions.
+    </p>
+
+    <ol>
+      <li>
+        <strong>Refresh declining content:</strong>
+        Prioritize pages showing evidence of declining performance.
+      </li>
+
+      <li>
+        <strong>Review weak engagement:</strong>
+        Investigate pages with weaker observed engagement signals.
+      </li>
+
+      <li>
+        <strong>Review weak click-through performance:</strong>
+        Investigate pages with weaker observed CTR.
+      </li>
+
+      <li>
+        <strong>Review older content:</strong>
+        Consider older pages as part of a broader content review.
+      </li>
+
+      <li>
+        <strong>Monitor pages without a clear action signal:</strong>
+        Do not force an action when the available evidence is weak.
+      </li>
+    </ol>
+
+    <p>
+      A FlyRank editor could use the ranked queue as a starting point for
+      daily or weekly content review.
+    </p>
+
+    <p>
+      Before taking action, the reviewer should check the page context,
+      available performance evidence, reason code, and whether the
+      recommendation makes sense for the specific content.
+    </p>
+
+    <h3>The system should not automatically:</h3>
+
+    <ul>
+      <li>Publish content</li>
+      <li>Delete content</li>
+      <li>Redirect URLs</li>
+      <li>Make major content changes</li>
+      <li>Make high-impact decisions</li>
+      <li>Treat a model prediction as proof of future performance</li>
+    </ul>
+
+    <p>
+      The confidence in individual recommendations is limited because the
+      validation results show weaker performance on unseen clients.
+    </p>
+
+    <p>
+      Therefore, the recommendations should remain
+      <strong>directional decision support</strong>.
+    </p>
+
+    <h2>8. Limitations</h2>
+
+    <ol>
+      <li>
+        The model is evaluated on observed data and does not prove future
+        search performance.
+      </li>
+
+      <li>
+        Performance is weaker when tested on unseen clients.
+      </li>
+
+      <li>
+        The client-holdout Average Precision was 0.5215.
+      </li>
+
+      <li>
+        The model should not be treated as a causal model.
+      </li>
+
+      <li>
+        Some pages contain mixed signals that can lead to classification
+        errors.
+      </li>
+
+      <li>
+        Human review is still required before taking action.
+      </li>
+
+      <li>
+        Changes in data conditions or feature distributions may reduce model
+        performance over time.
+      </li>
+    </ol>
+
+    <p>
+      These limitations mean the model is best used as a prioritization and
+      decision-support tool.
+    </p>
+
+    <h2>9. Reproducibility</h2>
+
+    <p>
+      The complete project repository is available here:
+    </p>
+
+    <p>
+      <a
+        href="https://github.com/muqaddaszaheer/flyrank-ml-internship"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        GitHub Repository
+      </a>
+    </p>
+
+    <p>
+      The main capstone notebook is:
+    </p>
+
+    <p>
+      <code>work/notebooks/capstone.ipynb</code>
+    </p>
+
+    <p>
+      Supporting notebooks are stored under:
+    </p>
+
+    <p>
+      <code>work/notebooks/</code>
+    </p>
+
+    <h3>Validation Workflow</h3>
+
+    <ul>
+      <li><code>data/raw/content_refresh_anonymized.csv</code></li>
+      <li><code>data/processed/refresh_feature_vector.csv</code></li>
+      <li><code>scripts/01_prepare_features.py</code></li>
+      <li><code>scripts/ml_utils.py</code></li>
+    </ul>
+
+    <h3>Model Configuration</h3>
+
+    <ul>
+      <li><code>StandardScaler</code></li>
+      <li><code>LogisticRegression</code></li>
+      <li><code>class_weight="balanced"</code></li>
+      <li><code>max_iter=2000</code></li>
+      <li><code>random_state=42</code></li>
+    </ul>
+
+    <p>
+      The stratified row split uses <code>test_size=0.20</code>,
+      <code>random_state=42</code>, and stratification by the target.
+    </p>
+
+    <p>
+      The client-holdout validation uses a NumPy random generator with seed
+      <code>42</code> and keeps clients completely separate between training
+      and test data.
+    </p>
+
+    <p>
+      The analysis should be re-run from a fresh clone before making a final
+      claim about the reported numbers.
+    </p>
+
+    <h2>10. Acknowledgments &amp; Data Credit</h2>
+
+    <p>
+      This project was built on the FlyRank ML Internship dataset.
+    </p>
+
+    <p>
+      Data and internship credit:
+      <a
+        href="https://flyrank.ai/"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        FlyRank
+      </a>
+    </p>
+
+    <h2>11. Week 9 — Break Your Own Site</h2>
+
+    <div class="note">
+      <strong>Hardening purpose:</strong>
+      This section records the checks performed during the Week 9
+      "Break Your Own Site" assignment.
+    </div>
+
+    <h3>SEO and Metadata</h3>
+
+    <ul>
+      <li>
+        <strong>Page title:</strong>
+        <span class="status">Added</span>
+      </li>
+
+      <li>
+        <strong>Meta description:</strong>
+        <span class="status">Added</span>
+      </li>
+
+      <li>
+        <strong>Open Graph title:</strong>
+        <span class="status">Added</span>
+      </li>
+
+      <li>
+        <strong>Open Graph description:</strong>
+        <span class="status">Added</span>
+      </li>
+
+      <li>
+        <strong>Open Graph URL:</strong>
+        <span class="status">Added</span>
+      </li>
+
+      <li>
+        <strong>Responsive viewport:</strong>
+        <span class="status">Added</span>
+      </li>
+    </ul>
+
+    <h3>Where It Breaks — Testing Checklist</h3>
+
+    <p>
+      Complete these checks before submitting the Week 9 assignment. Record
+      what actually happens instead of claiming a test passed when it was
+      not performed.
+    </p>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Test</th>
+          <th>Result</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr>
+          <td>Submit empty input/form</td>
+          <td>Record actual result</td>
+          <td>Fix if it causes an unexpected error</td>
+        </tr>
+
+        <tr>
+          <td>Submit garbage/invalid input</td>
+          <td>Record actual result</td>
+          <td>Fix unexpected behavior</td>
+        </tr>
+
+        <tr>
+          <td>Open on another browser</td>
+          <td>Record actual result</td>
+          <td>Fix compatibility problems</td>
+        </tr>
+
+        <tr>
+          <td>Open on mobile/device</td>
+          <td>Record actual result</td>
+          <td>Fix layout problems</td>
+        </tr>
+
+        <tr>
+          <td>Click GitHub repository link</td>
+          <td>Record actual result</td>
+          <td>Fix broken link</td>
+        </tr>
+
+        <tr>
+          <td>Click notebook/repository links</td>
+          <td>Record actual result</td>
+          <td>Fix broken links</td>
+        </tr>
+
+        <tr>
+          <td>Refresh the page</td>
+          <td>Record actual result</td>
+          <td>Fix unexpected behavior</td>
+        </tr>
+
+        <tr>
+          <td>Test page loading speed</td>
+          <td>Record actual result</td>
+          <td>Apply necessary improvements</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <h3>Fix-Now Findings</h3>
+
+    <div class="warning">
+      <strong>Important:</strong>
+      Only list an item here after you actually discover it during testing.
+      Do not invent a failure just to complete the checklist.
+    </div>
+
+    <ul>
+      <li>Record actual fix-now issue discovered during testing.</li>
+      <li>Describe the fix that was applied.</li>
+      <li>Retest the issue after the fix.</li>
+    </ul>
+
+    <h3>Known Limitations</h3>
+
+    <ul>
+      <li>
+        The machine-learning results are directional decision support and
+        should not be treated as guaranteed future performance.
+      </li>
+
+      <li>
+        Model performance is weaker on unseen clients.
+      </li>
+
+      <li>
+        Human review remains necessary before taking action.
+      </li>
+    </ul>
+
+    <h3>Hardening Review</h3>
+
+    <p>
+      <strong>Reviewer:</strong> Record mentor or structured peer reviewer.
+    </p>
+
+    <p>
+      <strong>Review date:</strong> Record the actual review date.
+    </p>
+
+    <p>
+      <strong>Must-fix items:</strong> Record the actual items identified
+      during the hardening review.
+    </p>
+
+    <p>
+      <strong>Status:</strong> Record the actual final status after addressing
+      the must-fix items.
+    </p>
+
+    <h2>12. Final Note</h2>
+
+    <p>
+      This project is presented as an applied machine-learning analysis and
+      decision-support workflow.
+    </p>
+
+    <p>
+      The results are observed and measured results from the available
+      evaluation data. They should not be interpreted as causal effects or
+      guaranteed future performance.
+    </p>
+
+    <p>
+      The final decision remains with a human reviewer.
+    </p>
+
+    <div class="footer">
+      FlyRank AI Internship Capstone · Search Intelligence Content Review ·
+      August 2026
+    </div>
+
+  </main>
 
 </body>
 </html>
