@@ -3,7 +3,7 @@
 **Author:** Muqaddas Zaheer Ahmad  
 **Lane:** Applied Search Intelligence  
 **Project:** FlyRank AI Internship Capstone  
-**Date:** August 2026
+**Date:** August 2026  
 
 ---
 
@@ -27,7 +27,7 @@ A wrong decision can waste review time or cause a page that deserves attention t
 
 Machine learning is useful here because several observable content, search, and engagement signals can be considered together instead of relying on only one simple rule.
 
-The output is decision support. It does not prove that a particular content change will improve search performance.
+The output is intended as decision support. It does not prove that a particular content change will improve search performance.
 
 ---
 
@@ -109,7 +109,7 @@ The first baseline was a simple and transparent rule using:
 - `days_since_last_update`
 - `ctr`
 
-A page was marked for review when it was relatively stale or had low CTR.
+A page was marked for review when it met the baseline staleness or CTR condition.
 
 The Week-4 baseline used:
 
@@ -121,11 +121,13 @@ The baseline provides a simple reference point for the machine-learning model.
 ### Baseline vs Model
 
 | Method | Accuracy | Precision | Recall | F1 |
-|---|---:|---:|---:|---:|
+| --- | ---: | ---: | ---: | ---: |
 | Week-4 baseline | 1.0000 | 1.0000 | 1.0000 | 1.0000 |
 | Logistic Regression | 0.8052 | 0.8202 | 0.8930 | 0.8551 |
 
-The perfect baseline result should be interpreted carefully because the Week-5 baseline target was constructed directly from the same staleness and CTR rule. Therefore, the baseline is a development reference rather than evidence that it is a stronger independent predictor.
+The perfect baseline result should be interpreted carefully. The Week-5 baseline target was constructed directly from the same staleness and CTR rule used by this baseline. Therefore, the 1.0000 result reflects alignment between the rule and the target definition rather than evidence that the baseline is a stronger independent predictor.
+
+For this reason, the baseline is treated as a development reference rather than an independent benchmark of real-world generalization.
 
 ---
 
@@ -148,7 +150,7 @@ The first evaluation used a stratified row split.
 
 ### Client-holdout split
 
-The final validation used a client-holdout split.
+The final evaluation used a client-holdout split.
 
 - Training rows: 27,675
 - Test rows: 2,325
@@ -165,12 +167,12 @@ The validation audit confirmed:
 
 **Shared clients: 0**
 
-This means the training and test clients were separated.
+This means the training and test clients were completely separated.
 
-### Final model results
+### Final client-holdout model results
 
 | Metric | Client-holdout result |
-|---|---:|
+| --- | ---: |
 | Accuracy | 0.6606 |
 | Precision | 0.5659 |
 | Recall | 0.5666 |
@@ -178,7 +180,7 @@ This means the training and test clients were separated.
 | ROC AUC | 0.7003 |
 | Average Precision | 0.5215 |
 
-The average precision decreased from 0.7271 under the row split to 0.5215 under the client-holdout split. This shows that the row-level evaluation was more optimistic and that performance is harder to maintain on unseen clients.
+The Average Precision decreased from 0.7271 under the row split to 0.5215 under the client-holdout split. This shows that the row-level evaluation was more optimistic and that performance is harder to maintain on unseen clients.
 
 ---
 
@@ -197,7 +199,7 @@ These coefficients describe associations within the model. They should not be in
 
 The error analysis also showed that some pages have signals that point in different directions. For example, a page can look stale but still not belong to the observed declining class, or it can show a declining label even when the simple staleness and CTR rule does not flag it.
 
-The most important negative result is the decrease in average precision from 0.7271 with the row split to 0.5215 with the client-holdout split.
+The most important negative result is the decrease in Average Precision from 0.7271 with the row split to 0.5215 with the client-holdout split.
 
 This suggests that generalization to unseen clients is more difficult than the simpler row-level evaluation suggests.
 
@@ -248,7 +250,7 @@ Therefore, the recommendations should remain **directional decision support**.
 
 ## 8. Limitations
 
-This project has several important limitations.
+This project has several important limitations:
 
 1. The model is evaluated on observed data and does not prove future search performance.
 2. Performance is weaker when tested on unseen clients.
@@ -305,7 +307,7 @@ The analysis should be re-run from a fresh clone before making a final claim abo
 
 ## 10. Acknowledgments & Data Credit
 
-Built on the FlyRank ML Internship dataset.
+This project was built on the FlyRank ML Internship dataset.
 
 Data and internship credit: [FlyRank](https://flyrank.ai)
 
