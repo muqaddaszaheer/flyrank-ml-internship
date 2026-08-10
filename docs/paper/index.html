@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Search Intelligence and Content Opportunity Analysis | Muqaddas Zaheer Ahmad</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            line-height: 1.7;
+            margin: 0;
+            background: #f5f7fa;
+            color: #222;
+        }
+
+        header {
+            background: #172554;
+            color: white;
+            padding: 55px 20px;
+            text-align: center;
+        }
+
+        header h1 {
+            margin: 0 0 15px;
+            font-size: 34px;
+        }
+
+        header p {
+            margin: 6px 0;
+            font-size: 17px;
+        }
+
+        main {
+            max-width: 950px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        section {
+            background: white;
+            padding: 30px;
+            margin-bottom: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
+        }
+
+        h2 {
+            color: #172554;
+            margin-top: 0;
+        }
+
+        h3 {
+            color: #1e40af;
+        }
+
+        li {
+            margin-bottom: 10px;
+        }
+
+        .note {
+            background: #eef4ff;
+            padding: 15px;
+            border-left: 4px solid #2563eb;
+            margin: 18px 0;
+        }
+
+        .result-box {
+            background: #f8fafc;
+            padding: 20px;
+            margin: 15px 0;
+            border-radius: 8px;
+            border-left: 4px solid #2563eb;
+        }
+
+        .metric {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .metric:last-child {
+            border-bottom: none;
+        }
+
+        .bar-container {
+            background: #e5e7eb;
+            border-radius: 8px;
+            height: 25px;
+            margin: 8px 0 18px;
+            overflow: hidden;
+        }
+
+        .bar {
+            background: #2563eb;
+            height: 100%;
+            border-radius: 8px;
+        }
+
+        .baseline-bar {
+            width: 24%;
+        }
+
+        .model-bar {
+            width: 74%;
+        }
+
+        a {
+            color: #1d4ed8;
+        }
+
+        footer {
+            text-align: center;
+            padding: 30px;
+            color: #555;
+        }
+
+        @media (max-width: 650px) {
+            header h1 {
+                font-size: 27px;
+            }
+
+            section {
+                padding: 22px;
+            }
+
+            .metric {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<header>
+    <h1>Search Intelligence and Content Opportunity Analysis</h1>
+    <p>Google Search Ranking &amp; Discoverability Capstone</p>
+    <p>Muqaddas Zaheer Ahmad | FlyRank AI Internship – Machine Learning Track</p>
+</header>
+
+<main>
+
+    <section>
+        <h2>Abstract</h2>
+
+        <p>
+            This research studies search and content performance using the
+            FlyRank machine learning internship dataset. The goal is to identify
+            useful signals and patterns that can support better content and
+            search decisions. The analysis follows a repeatable machine learning
+            workflow including data exploration, feature preparation, baseline
+            comparison, modeling, validation, and research-claim review. The
+            results are used to develop practical and ranked content
+            recommendations. The findings are intended for decision support and
+            should not be interpreted as proof of Google's ranking algorithm or
+            causal search effects.
+        </p>
+    </section>
+
+    <section>
+        <h2>Introduction / Problem Statement</h2>
+
+        <p>
+            Search and content performance can be influenced by multiple
+            content and engagement signals. Looking at these signals
+            individually can make it difficult to decide which pages deserve
+            attention first.
+        </p>
+
+        <p>
+            The purpose of this project is to use machine learning and data
+            analysis to identify useful patterns in the available FlyRank data
+            and turn those patterns into practical content recommendations.
+        </p>
+
+        <div class="note">
+            <strong>Decision supported:</strong>
+            The analysis is intended to help prioritize content and search
+            opportunities for further review.
+        </div>
+    </section>
+
+    <section>
+        <h2>Data</h2>
+
+        <p>
+            The analysis uses the FlyRank Machine Learning Internship warehouse
+            dataset provided for the internship.
+        </p>
+
+        <ul>
+            <li>Data source: FlyRank internship warehouse dataset.</li>
+            <li>
+                Data was explored and prepared using the workflow developed
+                during the internship.
+            </li>
+            <li>
+                Relevant tables and features were selected according to the
+                research question.
+            </li>
+            <li>
+                Data preparation included checking available fields and
+                excluding information that was not suitable for the analysis.
+            </li>
+        </ul>
+
+        <div class="note">
+            <strong>Public-safe version:</strong>
+            Private client names, domains, URLs, search queries, credentials,
+            and raw data exports are not included.
+        </div>
+    </section>
+
+    <section>
+        <h2>Methodology</h2>
+
+        <p>
+            The project follows a structured machine learning workflow developed
+            throughout the internship.
+        </p>
+
+        <ol>
+            <li>Define the research question and decision to support.</li>
+            <li>Explore the available data and identify useful features.</li>
+            <li>Prepare the dataset for modeling.</li>
+            <li>Define the target or action score used in the analysis.</li>
+            <li>Check for possible feature leakage.</li>
+            <li>Build a transparent baseline for comparison.</li>
+            <li>Train and evaluate the selected machine learning approach.</li>
+            <li>
+                Validate the model using the validation design from the
+                capstone workflow.
+            </li>
+            <li>
+                Review the strength and limitations of the research claims.
+            </li>
+        </ol>
+
+        <div class="note">
+            The evaluation compares the model and baseline using the same
+            evaluation setup so that the comparison is meaningful.
+        </div>
+    </section>
+
+    <section>
+        <h2>Results</h2>
+
+        <p>
+            The machine learning workflow was compared with a transparent
+            baseline using Precision@50. The documented FlyRank starter
+            workflow reports a baseline Precision@50 of 0.240 and a Random
+            Forest result of approximately 0.740 on the shipped software
+            stack.
+        </p>
+
+        <div class="result-box">
+            <h3>Precision@50 Comparison</h3>
+
+            <div class="metric">
+                <strong>Baseline</strong>
+                <strong>0.240</strong>
+            </div>
+
+            <div class="bar-container">
+                <div class="bar baseline-bar"></div>
+            </div>
+
+            <div class="metric">
+                <strong>Random Forest</strong>
+                <strong>0.740</strong>
+            </div>
+
+            <div class="bar-container">
+                <div class="bar model-bar"></div>
+            </div>
+        </div>
+
+        <p>
+            This comparison indicates that the machine learning approach can
+            provide substantially stronger prioritization than the simple
+            baseline in the documented workflow.
+        </p>
+
+        <div class="note">
+            The Random Forest result can vary across different versions of
+            NumPy and scikit-learn. The result should therefore be interpreted
+            as an evaluation result from the internship workflow rather than
+            as a universal performance guarantee.
+        </div>
+    </section>
+
+    <section>
+        <h2>Limitations &amp; Honest Framing</h2>
+
+        <ul>
+            <li>
+                The analysis is based on the available FlyRank internship
+                dataset.
+            </li>
+            <li>
+                The results show useful patterns and associations, not
+                guaranteed causal effects.
+            </li>
+            <li>
+                The project does not prove how Google's ranking algorithm works.
+            </li>
+            <li>
+                Model results should be treated as decision-support evidence.
+            </li>
+            <li>
+                Additional data and future testing would be needed before
+                making stronger claims.
+            </li>
+            <li>
+                Results may vary depending on the software environment and
+                dataset version.
+            </li>
+        </ul>
+
+        <div class="note">
+            The findings should be used to support human review and
+            prioritization, not to automatically claim that a specific factor
+            causes a change in search performance.
+        </div>
+    </section>
+
+    <section>
+        <h2>Ranked Recommendations</h2>
+
+        <ol>
+            <li>
+                <strong>Prioritize the strongest opportunities.</strong>
+                Focus first on pages or content areas identified by the
+                analysis as having the greatest potential for improvement.
+            </li>
+
+            <li>
+                <strong>Review important content signals.</strong>
+                Investigate the signals identified during the analysis before
+                making content changes.
+            </li>
+
+            <li>
+                <strong>Apply targeted improvements.</strong>
+                Focus recommendations on high-priority opportunities instead
+                of making broad changes everywhere.
+            </li>
+
+            <li>
+                <strong>Monitor performance after changes.</strong>
+                Track future performance to determine whether recommended
+                actions remain useful.
+            </li>
+        </ol>
+    </section>
+
+    <section>
+        <h2>Reproducibility</h2>
+
+        <p>
+            The notebooks used during the internship are available in the
+            project repository.
+        </p>
+
+        <p>
+            <a
+                href="https://github.com/muqaddadzaheer/flyrank-ml-internship"
+                target="_blank"
+                rel="noopener noreferrer">
+                View the GitHub Repository
+            </a>
+        </p>
+
+        <p>
+            The repository contains the research question, data preparation,
+            feature and leakage checks, baseline analysis, modeling,
+            validation, and action playbook notebooks used to develop this
+            capstone.
+        </p>
+
+        <h3>Key Notebooks</h3>
+
+        <ul>
+            <li>Research question and initial analysis</li>
+            <li>ML task framing</li>
+            <li>Data contract and preparation</li>
+            <li>Feature and leakage checks</li>
+            <li>Baseline score analysis</li>
+            <li>Modeling</li>
+            <li>Validation and research claim audit</li>
+            <li>Content action playbook</li>
+            <li>Final capstone notebook</li>
+        </ul>
+    </section>
+
+    <section>
+        <h2>Acknowledgments &amp; Data Credit</h2>
+
+        <p>
+            Built on the FlyRank ML Internship dataset.
+        </p>
+
+        <p>
+            <a
+                href="https://flyrank.ai"
+                target="_blank"
+                rel="noopener noreferrer">
+                FlyRank
+            </a>
+        </p>
+
+        <p>
+            This project was completed as part of the FlyRank AI Internship
+            Machine Learning Track.
+        </p>
+    </section>
+
+</main>
+
+<footer>
+    <p>&copy; 2026 Muqaddas Zaheer Ahmad</p>
+    <p>FlyRank AI Internship – Machine Learning Track</p>
+    <p>Built for research and educational purposes.</p>
+</footer>
+
+</body>
+</html>
